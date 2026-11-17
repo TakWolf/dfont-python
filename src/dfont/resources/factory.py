@@ -6,6 +6,6 @@ from dfont.resources.sfnt import SfntResource
 
 RESOURCE_TYPE_REGISTRY: Final = {
     'sfnt': SfntResource,
-    'NFNT': NfntResource,
-    'FOND': FondResource,
+    # 'NFNT': NfntResource,
+    # 'FOND': FondResource,
 }
