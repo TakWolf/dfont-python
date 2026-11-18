@@ -3,7 +3,7 @@ from __future__ import annotations
 from dfont.error import DFontParseError, DFontDumpError
 from dfont.resources.fond.association import FondAssociation
 from dfont.resources.fond.flags import FondFlags
-from dfont.resources.fond.style_roperties import FondStyleProperties
+from dfont.resources.fond.style_properties import FondStyleProperties
 from dfont.resources.resource import Resource
 from dfont.utils.stream import Stream
 
