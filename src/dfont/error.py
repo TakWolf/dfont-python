@@ -9,3 +9,7 @@ class DFontParseError(DFontError):
 
 class DFontDumpError(DFontError):
     pass
+
+
+class DFontValidationError(DFontError):
+    pass
