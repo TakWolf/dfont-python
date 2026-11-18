@@ -13,6 +13,16 @@ _FONT_DEPTH_MASK = 0b_0000_0011_0000_0000
 
 @unique
 class FondFontStyle(IntFlag):
+    """A FOND style code with independent, combinable style bits 0-6.
+
+    In association records, bits 8-9 additionally encode the font's pixel depth.
+    Their value must match bits 2-3 in the referenced NFNT's fontType. Other bits
+    are retained when reading or replacing existing values.
+
+    Styles: https://developer.apple.com/library/archive/documentation/mac/Text/Text-270.html
+    Depth: https://developer.apple.com/library/archive/documentation/mac/Text/Text-271.html
+    """
+
     DEFAULT = 0
     BOLD = 0b_0000_0000_0000_0001
     ITALIC = 0b_0000_0000_0000_0010

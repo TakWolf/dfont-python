@@ -5,6 +5,14 @@ from enum import IntFlag, unique
 
 @unique
 class FondFlags(IntFlag):
+    """The 16-bit FamRec.ffFlags field controlling font-family behavior.
+
+    Bits 0 and 2-11 are reserved and should be zero in new resources. Raw values
+    and replace() retain unspecified bits when working with existing files.
+
+    https://developer.apple.com/library/archive/documentation/mac/Text/Text-269.html
+    """
+
     DEFAULT = 0
     HAS_GLYPH_WIDTH_TABLE = 0b_0000_0000_0000_0010
     IGNORE_FRACT_ENABLE = 0b_0001_0000_0000_0000

@@ -7,6 +7,45 @@ from dfont.utils.stream import Stream
 
 
 class FondStyleProperties:
+    """Decoded style-dependent extra widths from the nine-word ffProperty array.
+
+    Values describe extra glyph width in pixels at a 1-point size; multiply by the
+    requested point size to obtain the corresponding width adjustment. A negative
+    value reduces width. Existing intrinsic fonts take precedence over synthesis.
+    These values describe width adjustments, not angles or style-selection flags.
+
+    On disk each value is signed 4.12 fixed point (integer divided by 4096).
+    The ninth word is unused and is written as zero. plain should also be zero.
+
+    https://developer.apple.com/library/archive/documentation/mac/Text/Text-269.html
+
+    Attributes:
+        plain:
+            Adjustment for plain text; the specification requires zero.
+            Corresponds to Apple's ffProperty[1] entry.
+        bold:
+            Decoded extra width for bold synthesis.
+            Corresponds to Apple's ffProperty[2] entry.
+        italic:
+            Decoded extra width for italic synthesis.
+            Corresponds to Apple's ffProperty[3] entry.
+        underline:
+            Decoded extra width for underlined text.
+            Corresponds to Apple's ffProperty[4] entry.
+        outline:
+            Decoded extra width for outlined text.
+            Corresponds to Apple's ffProperty[5] entry.
+        shadow:
+            Decoded extra width for shadowed text.
+            Corresponds to Apple's ffProperty[6] entry.
+        condensed:
+            Decoded width adjustment for condensed text.
+            Corresponds to Apple's ffProperty[7] entry.
+        extended:
+            Decoded width adjustment for extended text.
+            Corresponds to Apple's ffProperty[8] entry.
+    """
+
     @staticmethod
     def parse(stream: Stream) -> FondStyleProperties:
         plain = stream.read_fixed_4_12()

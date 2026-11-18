@@ -9,6 +9,79 @@ _TAG = 'NFNT'
 
 
 class NfntResource(Resource):
+    """An 'NFNT' bitmap font with a FontRec header and glyph tables.
+
+    The bitmap holds the glyphs side by side. For N character codes in the inclusive
+    first_char..last_char range, location and offset/width tables have N + 2 entries:
+    characters, the missing glyph, and an end entry. Optional tables have N + 1 entries.
+    A zero row_words value represents a stub with no bitmap tables.
+
+    Header: https://developer.apple.com/library/archive/documentation/mac/Text/Text-214.html
+    Tables: https://developer.apple.com/library/archive/documentation/mac/Text/Text-250.html
+
+    Attributes:
+        font_type:
+            The 16-bit font characteristics, optional-table flags, and pixel depth.
+            Corresponds to Apple's fontType field.
+        first_char:
+            First character code in the font's inclusive range.
+            Corresponds to Apple's firstChar field.
+        last_char:
+            Last character code in the font's inclusive range.
+            Corresponds to Apple's lastChar field.
+        width_max:
+            Maximum glyph width, in pixels.
+            Corresponds to Apple's widMax field.
+        kern_max:
+            Horizontal origin-to-left-edge distance; negative for left overhang.
+            Corresponds to Apple's kernMax field.
+        negated_descent:
+            Negated descent, or the high 16 offset bits when positive.
+            Corresponds to Apple's nDescent field.
+        rectangle_width:
+            Width in pixels of the rectangle enclosing superimposed glyphs.
+            Corresponds to Apple's fRectWidth field.
+        rectangle_height:
+            Font rectangle height in pixels, normally ascent plus descent.
+            Corresponds to Apple's fRectHeight field.
+        offset_width_table_location:
+            Low 16 bits of the offset/width-table location, in 16-bit words. The base is this header
+            field at payload byte 16. Combine positive nDescent as the high word, then multiply by two
+            and add 16 for a payload byte offset.
+            Corresponds to Apple's owTLoc field.
+        ascent:
+            Maximum distance from baseline to the top of the font rectangle, in pixels.
+            Corresponds to Apple's ascent field.
+        descent:
+            Maximum distance below baseline, in pixels.
+            Corresponds to Apple's descent field.
+        leading:
+            Extra vertical spacing between consecutive lines, in pixels.
+            Corresponds to Apple's leading field.
+        row_words:
+            Bitmap scanline length in 16-bit words; zero for a bitmap-less stub.
+            Corresponds to Apple's rowWords field.
+        bitmap_data:
+            Packed bitmap rows, including row-end padding; length is row_words * 2 *
+            rectangle_height.
+        bitmap_locations:
+            Bit offsets into a bitmap row, including the missing glyph and final boundary.
+        offset_widths:
+            Packed unsigned words: glyph offset in the high byte, integer advance in the low
+            byte. Add kern_max to the offset for the left bearing; 0xFFFF marks missing/end entries.
+        glyph_widths:
+            Optional unsigned 8.8 widths: divide each encoded integer by 256 for pixel units.
+            An empty list represents an absent table, as indicated by font_type.
+        image_heights:
+            Optional packed words: top blank-row count in the high byte, drawn-row count in
+            the low byte.
+        table_padding:
+            Bytes between the location table and offset/width table, retained for layout
+            preservation.
+        extra_data:
+            Uninterpreted bytes after the known tables, including any trailing bytes in a stub.
+    """
+
     @staticmethod
     def parse(
             stream: Stream,

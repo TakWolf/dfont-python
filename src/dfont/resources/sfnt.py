@@ -8,6 +8,16 @@ _TAG = 'sfnt'
 
 
 class SfntResource(Resource):
+    """An 'sfnt' resource holding an entire SFNT font as opaque bytes.
+
+    This wrapper preserves the font bytes without parsing the SFNT table directory
+    or individual font tables.
+
+    Attributes:
+        data:
+            Complete embedded SFNT font, excluding the resource-length word.
+    """
+
     @staticmethod
     def parse(
             stream: Stream,

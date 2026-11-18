@@ -5,6 +5,13 @@ from dfont.utils.stream import Stream
 
 
 class RawResource(Resource):
+    """A resource whose payload is retained as uninterpreted bytes.
+
+    Attributes:
+        data:
+            Complete payload, excluding the enclosing resource-length word.
+    """
+
     @staticmethod
     def parse(
             stream: Stream,

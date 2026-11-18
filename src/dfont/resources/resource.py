@@ -7,6 +7,20 @@ from dfont.utils.stream import Stream
 
 
 class Resource(ABC):
+    """Base class for one tagged resource and its resource-map metadata.
+
+    Resource payload codecs receive a Stream at the beginning of the payload;
+    the enclosing four-byte payload length is handled by DFont.
+
+    Attributes:
+        id:
+            Signed 16-bit resource ID; the pair (tag, id) identifies a resource in a file.
+        name:
+            Optional resource name, encoded as a Mac Roman Pascal string in the name list.
+        attributes:
+            Unsigned 8-bit resource attributes from the reference entry.
+    """
+
     @staticmethod
     @abstractmethod
     def parse(

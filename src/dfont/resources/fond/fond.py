@@ -11,6 +11,72 @@ _TAG = 'FOND'
 
 
 class FondResource(Resource):
+    """A 'FOND' font family with its FamRec header and association records.
+
+    Optional family tables remain in additional_data. Their offsets in this model
+    are relative to that byte block, so changing the association count moves the
+    block without changing the stored relative offsets. None means no table;
+    zero identifies the first byte of an existing block.
+
+    Header metrics retain encoded signed 4.12 integers; style_properties exposes
+    decoded floating-point widths instead.
+
+    Header: https://developer.apple.com/library/archive/documentation/mac/Text/Text-215.html
+    Format: https://developer.apple.com/library/archive/documentation/mac/Text/Text-269.html
+
+    Attributes:
+        flags:
+            16-bit family characteristics and fractional-width behavior.
+            Corresponds to Apple's ffFlags field.
+        family_id:
+            Signed 16-bit font-family identifier.
+            Corresponds to Apple's ffFamID field.
+        first_char:
+            First character code covered by family tables.
+            Corresponds to Apple's ffFirstChar field.
+        last_char:
+            Last character code covered by family tables, inclusive.
+            Corresponds to Apple's ffLastChar field.
+        ascent:
+            Encoded maximum ascent for a 1-point font; divide by 4096 to decode.
+            Corresponds to Apple's ffAscent field.
+        descent:
+            Encoded maximum descent for a 1-point font; divide by 4096 to decode.
+            Corresponds to Apple's ffDescent field.
+        leading:
+            Encoded leading for a 1-point font; divide by 4096 to decode.
+            Corresponds to Apple's ffLeading field.
+        width_max:
+            Encoded maximum glyph width for a 1-point font; divide by 4096 to decode.
+            Corresponds to Apple's ffWidMax field.
+        style_properties:
+            Decoded extra widths used when synthesizing stylistic variations.
+            Corresponds to Apple's ffProperty field.
+        international_info:
+            Two integers for script-management internals, retained without interpretation.
+            Corresponds to Apple's ffIntl field.
+        version:
+            Historical format version. 0 denotes system-generated data; 1 the original developer format;
+            2 may include offset/bounds tables; 3 declares them. Actual table offsets and contents
+            should be checked rather than relying on this value.
+            Corresponds to Apple's ffVersion field.
+        associations:
+            fontAssoc entries mapping point sizes and styles to font resource IDs. The file
+            stores len(associations) - 1 before these six-byte records.
+        additional_data:
+            Raw bytes following the association table, containing optional tables and any
+            padding.
+        glyph_width_table_offset:
+            ffWTabOff normalized to a byte offset within additional_data; None
+            when absent.
+        kerning_table_offset:
+            ffKernOff normalized to a byte offset within additional_data; None when
+            absent.
+        style_mapping_table_offset:
+            ffStylOff normalized to a byte offset within additional_data; None
+            when absent.
+    """
+
     @staticmethod
     def parse(
             stream: Stream,

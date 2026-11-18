@@ -12,6 +12,15 @@ _FONT_DEPTH_MASK = 0b_0000_0000_0000_1100
 
 @unique
 class NfntFontType(IntFlag):
+    """The 16-bit FontRec.fontType field for an NFNT bitmap font.
+
+    Bits 2-3 encode a depth index: 0, 1, 2, 3 mean 1, 2, 4, 8 bits per pixel.
+    New fonts set reserved bit 12 and clear reserved bits 4-6, 10-11, and 15.
+    Constructing from a raw integer and replace() preserve unspecified bits.
+
+    https://developer.apple.com/library/archive/documentation/mac/Text/Text-251.html
+    """
+
     DEFAULT = 0b_0001_0000_0000_0000
     HAS_IMAGE_HEIGHT_TABLE = 0b_0000_0000_0000_0001
     HAS_GLYPH_WIDTH_TABLE = 0b_0000_0000_0000_0010

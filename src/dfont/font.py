@@ -13,6 +13,23 @@ from dfont.utils.stream import Stream
 
 
 class DFont:
+    """A Macintosh resource file stored in the data fork of a .dfont file.
+
+    Resource payloads are written in resources order; resource-map references are
+    grouped by tag. Parsing restores payload order from the recorded data offsets.
+    File attributes and each resource's attributes are separate fields.
+
+    Attributes:
+        resources:
+            Resource payloads and metadata, in their data-area order.
+        application_data:
+            Application-specific header bytes; at most 128 bytes, padded with zeros on
+            output.
+        attributes:
+            The resource map's 16-bit resource-file attributes, distinct from
+            Resource.attributes.
+    """
+
     @staticmethod
     def parse(stream: bytes | bytearray | BinaryIO) -> DFont:
         stream = Stream(stream)

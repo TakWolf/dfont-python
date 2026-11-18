@@ -7,6 +7,27 @@ from dfont.utils.stream import Stream
 
 
 class FondAssociation:
+    """One six-byte AsscEntry mapping a font size and style to a resource ID.
+
+    FOND association tables list outline fonts with size zero before bitmap sizes;
+    sizes ascend and plain entries precede styled entries. Serialization preserves
+    the caller's record order.
+
+    https://developer.apple.com/library/archive/documentation/mac/Text/Text-271.html
+
+    Attributes:
+        font_size:
+            Point size of a bitmap font; zero identifies an outline font.
+            Corresponds to Apple's fontSize field.
+        font_style:
+            Combinable style bits; bits 8-9 encode depth for association entries. The depth should match
+            bits 2-3 of the referenced NFNT's fontType.
+            Corresponds to Apple's fontStyle field.
+        font_id:
+            Signed 16-bit ID of the referenced 'sfnt', 'NFNT', or 'FONT' resource.
+            Corresponds to Apple's fontID field.
+    """
+
     @staticmethod
     def parse(stream: Stream) -> FondAssociation:
         font_size = stream.read_uint16()
