@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
+from typing import Any
+
 from dfont.resources.resource import Resource
 from dfont.utils.stream import Stream
 
@@ -39,6 +42,18 @@ class RawResource(Resource):
         self._tag = tag
         self.data = data
 
+    def __copy__(self) -> RawResource:
+        return RawResource(
+            self.tag,
+            self.id,
+            self.data,
+            self.name,
+            self.attributes,
+        )
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> RawResource:
+        return copy(self)
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, RawResource):
             return NotImplemented
@@ -54,13 +69,7 @@ class RawResource(Resource):
         return stream.write(self.data)
 
     def copy(self) -> RawResource:
-        return RawResource(
-            self.tag,
-            self.id,
-            self.data,
-            self.name,
-            self.attributes,
-        )
+        return copy(self)
 
     def deepcopy(self) -> RawResource:
-        return self.copy()
+        return deepcopy(self)

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
+from typing import Any
+
 from dfont.error import DFontParseError, DFontDumpError
 from dfont.resources.fond.association import FondAssociation
 from dfont.resources.fond.flags import FondFlags
@@ -209,6 +212,52 @@ class FondResource(Resource):
         self.kerning_table_offset = kerning_table_offset
         self.style_mapping_table_offset = style_mapping_table_offset
 
+    def __copy__(self) -> FondResource:
+        return FondResource(
+            self.id,
+            self.flags,
+            self.family_id,
+            self.first_char,
+            self.last_char,
+            self.ascent,
+            self.descent,
+            self.leading,
+            self.width_max,
+            self.style_properties,
+            self.international_info,
+            self.version,
+            self.associations,
+            self.additional_data,
+            self.glyph_width_table_offset,
+            self.kerning_table_offset,
+            self.style_mapping_table_offset,
+            self.name,
+            self.attributes,
+        )
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> FondResource:
+        return FondResource(
+            self.id,
+            self.flags,
+            self.family_id,
+            self.first_char,
+            self.last_char,
+            self.ascent,
+            self.descent,
+            self.leading,
+            self.width_max,
+            self.style_properties.deepcopy(),
+            self.international_info,
+            self.version,
+            [association.deepcopy() for association in self.associations],
+            self.additional_data,
+            self.glyph_width_table_offset,
+            self.kerning_table_offset,
+            self.style_mapping_table_offset,
+            self.name,
+            self.attributes,
+        )
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, FondResource):
             return NotImplemented
@@ -272,47 +321,7 @@ class FondResource(Resource):
         return data_length
 
     def copy(self) -> FondResource:
-        return FondResource(
-            self.id,
-            self.flags,
-            self.family_id,
-            self.first_char,
-            self.last_char,
-            self.ascent,
-            self.descent,
-            self.leading,
-            self.width_max,
-            self.style_properties,
-            self.international_info,
-            self.version,
-            self.associations,
-            self.additional_data,
-            self.glyph_width_table_offset,
-            self.kerning_table_offset,
-            self.style_mapping_table_offset,
-            self.name,
-            self.attributes,
-        )
+        return copy(self)
 
     def deepcopy(self) -> FondResource:
-        return FondResource(
-            self.id,
-            self.flags,
-            self.family_id,
-            self.first_char,
-            self.last_char,
-            self.ascent,
-            self.descent,
-            self.leading,
-            self.width_max,
-            self.style_properties.deepcopy(),
-            self.international_info,
-            self.version,
-            [association.deepcopy() for association in self.associations],
-            self.additional_data,
-            self.glyph_width_table_offset,
-            self.kerning_table_offset,
-            self.style_mapping_table_offset,
-            self.name,
-            self.attributes,
-        )
+        return deepcopy(self)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
 from io import SEEK_CUR
 from typing import Any
 
@@ -98,10 +99,19 @@ class FondStyleProperties:
         self.extended = extended
 
     def __copy__(self) -> FondStyleProperties:
-        return self.copy()
+        return FondStyleProperties(
+            self.plain,
+            self.bold,
+            self.italic,
+            self.underline,
+            self.outline,
+            self.shadow,
+            self.condensed,
+            self.extended,
+        )
 
     def __deepcopy__(self, memo: dict[int, Any]) -> FondStyleProperties:
-        return self.deepcopy()
+        return copy(self)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, FondStyleProperties):
@@ -132,16 +142,7 @@ class FondStyleProperties:
         return data_length
 
     def copy(self) -> FondStyleProperties:
-        return FondStyleProperties(
-            self.plain,
-            self.bold,
-            self.italic,
-            self.underline,
-            self.outline,
-            self.shadow,
-            self.condensed,
-            self.extended,
-        )
+        return copy(self)
 
     def deepcopy(self) -> FondStyleProperties:
-        return self.copy()
+        return deepcopy(self)

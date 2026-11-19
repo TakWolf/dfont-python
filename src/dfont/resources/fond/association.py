@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
 from typing import Any
 
 from dfont.resources.fond.font_style import FondFontStyle
@@ -54,10 +55,14 @@ class FondAssociation:
         self.font_id = font_id
 
     def __copy__(self) -> FondAssociation:
-        return self.copy()
+        return FondAssociation(
+            self.font_size,
+            self.font_style,
+            self.font_id,
+        )
 
     def __deepcopy__(self, memo: dict[int, Any]) -> FondAssociation:
-        return self.deepcopy()
+        return copy(self)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, FondAssociation):
@@ -77,11 +82,7 @@ class FondAssociation:
         return data_length
 
     def copy(self) -> FondAssociation:
-        return FondAssociation(
-            self.font_size,
-            self.font_style,
-            self.font_id,
-        )
+        return copy(self)
 
     def deepcopy(self) -> FondAssociation:
-        return self.copy()
+        return deepcopy(self)

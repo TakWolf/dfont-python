@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
 from io import BytesIO, SEEK_CUR
 from operator import itemgetter
 from os import PathLike
@@ -155,10 +156,18 @@ class DFont:
         self.attributes = attributes
 
     def __copy__(self) -> DFont:
-        return self.copy()
+        return DFont(
+            self.resources,
+            self.application_data,
+            self.attributes,
+        )
 
     def __deepcopy__(self, memo: dict[int, Any]) -> DFont:
-        return self.deepcopy()
+        return DFont(
+            [resource.deepcopy() for resource in self.resources],
+            self.application_data,
+            self.attributes,
+        )
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, DFont):
@@ -269,15 +278,7 @@ class DFont:
             self.dump(file)
 
     def copy(self) -> DFont:
-        return DFont(
-            self.resources,
-            self.application_data,
-            self.attributes,
-        )
+        return copy(self)
 
     def deepcopy(self) -> DFont:
-        return DFont(
-            [resource.deepcopy() for resource in self.resources],
-            self.application_data,
-            self.attributes,
-        )
+        return deepcopy(self)

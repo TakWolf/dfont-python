@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
+from typing import Any
+
 from dfont.error import DFontParseError, DFontValidationError
 from dfont.resources.nfnt.font_type import NfntFontType
 from dfont.resources.resource import Resource
@@ -260,6 +263,60 @@ class NfntResource(Resource):
         self.table_padding = table_padding
         self.extra_data = extra_data
 
+    def __copy__(self) -> NfntResource:
+        return NfntResource(
+            self.id,
+            self.font_type,
+            self.first_char,
+            self.last_char,
+            self.width_max,
+            self.kern_max,
+            self.negated_descent,
+            self.rectangle_width,
+            self.rectangle_height,
+            self.offset_width_table_location,
+            self.ascent,
+            self.descent,
+            self.leading,
+            self.row_words,
+            self.bitmap_data,
+            self.bitmap_locations,
+            self.offset_widths,
+            self.glyph_widths,
+            self.image_heights,
+            self.table_padding,
+            self.extra_data,
+            self.name,
+            self.attributes,
+        )
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> NfntResource:
+        return NfntResource(
+            self.id,
+            self.font_type,
+            self.first_char,
+            self.last_char,
+            self.width_max,
+            self.kern_max,
+            self.negated_descent,
+            self.rectangle_width,
+            self.rectangle_height,
+            self.offset_width_table_location,
+            self.ascent,
+            self.descent,
+            self.leading,
+            self.row_words,
+            self.bitmap_data,
+            self.bitmap_locations.copy(),
+            self.offset_widths.copy(),
+            self.glyph_widths.copy(),
+            self.image_heights.copy(),
+            self.table_padding,
+            self.extra_data,
+            self.name,
+            self.attributes,
+        )
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, NfntResource):
             return NotImplemented
@@ -371,55 +428,7 @@ class NfntResource(Resource):
         return data_length
 
     def copy(self) -> NfntResource:
-        return NfntResource(
-            self.id,
-            self.font_type,
-            self.first_char,
-            self.last_char,
-            self.width_max,
-            self.kern_max,
-            self.negated_descent,
-            self.rectangle_width,
-            self.rectangle_height,
-            self.offset_width_table_location,
-            self.ascent,
-            self.descent,
-            self.leading,
-            self.row_words,
-            self.bitmap_data,
-            self.bitmap_locations,
-            self.offset_widths,
-            self.glyph_widths,
-            self.image_heights,
-            self.table_padding,
-            self.extra_data,
-            self.name,
-            self.attributes,
-        )
+        return copy(self)
 
     def deepcopy(self) -> NfntResource:
-        return NfntResource(
-            self.id,
-            self.font_type,
-            self.first_char,
-            self.last_char,
-            self.width_max,
-            self.kern_max,
-            self.negated_descent,
-            self.rectangle_width,
-            self.rectangle_height,
-            self.offset_width_table_location,
-            self.ascent,
-            self.descent,
-            self.leading,
-            self.row_words,
-            self.bitmap_data,
-            self.bitmap_locations.copy(),
-            self.offset_widths.copy(),
-            self.glyph_widths.copy(),
-            self.image_heights.copy(),
-            self.table_padding,
-            self.extra_data,
-            self.name,
-            self.attributes,
-        )
+        return deepcopy(self)

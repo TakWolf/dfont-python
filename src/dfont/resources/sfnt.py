@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from copy import copy, deepcopy
+from typing import Any
+
 from dfont.error import DFontParseError
 from dfont.resources.resource import Resource
 from dfont.utils.stream import Stream
@@ -45,6 +48,17 @@ class SfntResource(Resource):
         super().__init__(id, name, attributes)
         self.data = data
 
+    def __copy__(self) -> SfntResource:
+        return SfntResource(
+            self.id,
+            self.data,
+            self.name,
+            self.attributes,
+        )
+
+    def __deepcopy__(self, memo: dict[int, Any]) -> SfntResource:
+        return copy(self)
+
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, SfntResource):
             return NotImplemented
@@ -59,12 +73,7 @@ class SfntResource(Resource):
         return stream.write(self.data)
 
     def copy(self) -> SfntResource:
-        return SfntResource(
-            self.id,
-            self.data,
-            self.name,
-            self.attributes,
-        )
+        return copy(self)
 
     def deepcopy(self) -> SfntResource:
-        return self.copy()
+        return deepcopy(self)

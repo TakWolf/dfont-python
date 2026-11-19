@@ -47,11 +47,13 @@ class Resource(ABC):
         self.name = name
         self.attributes = attributes
 
+    @abstractmethod
     def __copy__(self) -> Resource:
-        return self.copy()
+        raise NotImplementedError()
 
+    @abstractmethod
     def __deepcopy__(self, memo: dict[int, Any]) -> Resource:
-        return self.deepcopy()
+        raise NotImplementedError()
 
     @abstractmethod
     def __eq__(self, other: object) -> bool:
