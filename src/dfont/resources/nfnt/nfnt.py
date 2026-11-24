@@ -73,7 +73,8 @@ class NfntResource(Resource):
             Packed unsigned words: glyph offset in the high byte, integer advance in the low
             byte. Add kern_max to the offset for the left bearing; 0xFFFF marks missing/end entries.
         glyph_widths:
-            Optional unsigned 8.8 widths: divide each encoded integer by 256 for pixel units.
+            Optional decoded floating-point glyph widths, in pixels. On disk each width
+            uses unsigned 8.8 fixed point (integer divided by 256).
             An empty list represents an absent table, as indicated by font_type.
         image_heights:
             Optional packed words: top blank-row count in the high byte, drawn-row count in
@@ -150,7 +151,7 @@ class NfntResource(Resource):
             offset_widths = stream.read_uint16_list(num_table_entries)
 
             if font_type.has_glyph_width_table:
-                glyph_widths = stream.read_uint16_list(num_table_entries - 1)
+                glyph_widths = stream.read_ufixed_8_8_list(num_table_entries - 1)
             else:
                 glyph_widths = []
 
@@ -210,7 +211,7 @@ class NfntResource(Resource):
     bitmap_data: bytes
     bitmap_locations: list[int]
     offset_widths: list[int]
-    glyph_widths: list[int]
+    glyph_widths: list[float]
     image_heights: list[int]
     table_padding: bytes
     extra_data: bytes
@@ -234,7 +235,7 @@ class NfntResource(Resource):
             bitmap_data: bytes = b'',
             bitmap_locations: list[int] | None = None,
             offset_widths: list[int] | None = None,
-            glyph_widths: list[int] | None = None,
+            glyph_widths: list[float] | None = None,
             image_heights: list[int] | None = None,
             table_padding: bytes = b'',
             extra_data: bytes = b'',
@@ -419,7 +420,7 @@ class NfntResource(Resource):
             stream.write_uint16_list(self.bitmap_locations)
             stream.write(self.table_padding)
             stream.write_uint16_list(self.offset_widths)
-            stream.write_uint16_list(self.glyph_widths)
+            stream.write_ufixed_8_8_list(self.glyph_widths)
             stream.write_uint16_list(self.image_heights)
 
         stream.write(self.extra_data)
