@@ -21,8 +21,8 @@ class FondResource(Resource):
     block without changing the stored relative offsets. None means no table;
     zero identifies the first byte of an existing block.
 
-    Header metrics retain encoded signed 4.12 integers; style_properties exposes
-    decoded floating-point widths instead.
+    Header metrics and style_properties expose decoded floating-point values.
+    On disk these values use signed 4.12 fixed point (integer divided by 4096).
 
     Header: https://developer.apple.com/library/archive/documentation/mac/Text/Text-215.html
     Format: https://developer.apple.com/library/archive/documentation/mac/Text/Text-269.html
@@ -41,16 +41,16 @@ class FondResource(Resource):
             Last character code covered by family tables, inclusive.
             Corresponds to Apple's ffLastChar field.
         ascent:
-            Encoded maximum ascent for a 1-point font; divide by 4096 to decode.
+            Decoded maximum ascent for a 1-point font.
             Corresponds to Apple's ffAscent field.
         descent:
-            Encoded maximum descent for a 1-point font; divide by 4096 to decode.
+            Decoded maximum descent for a 1-point font.
             Corresponds to Apple's ffDescent field.
         leading:
-            Encoded leading for a 1-point font; divide by 4096 to decode.
+            Decoded leading for a 1-point font.
             Corresponds to Apple's ffLeading field.
         width_max:
-            Encoded maximum glyph width for a 1-point font; divide by 4096 to decode.
+            Decoded maximum glyph width for a 1-point font.
             Corresponds to Apple's ffWidMax field.
         style_properties:
             Decoded extra widths used when synthesizing stylistic variations.
@@ -101,10 +101,10 @@ class FondResource(Resource):
         family_id = stream.read_int16()
         first_char = stream.read_int16()
         last_char = stream.read_int16()
-        ascent = stream.read_int16()
-        descent = stream.read_int16()
-        leading = stream.read_int16()
-        width_max = stream.read_int16()
+        ascent = stream.read_fixed_4_12()
+        descent = stream.read_fixed_4_12()
+        leading = stream.read_fixed_4_12()
+        width_max = stream.read_fixed_4_12()
 
         resource_table_offsets = stream.read_uint32_list(3)
         style_properties = FondStyleProperties.parse(stream)
@@ -159,10 +159,10 @@ class FondResource(Resource):
     family_id: int
     first_char: int
     last_char: int
-    ascent: int
-    descent: int
-    leading: int
-    width_max: int
+    ascent: float
+    descent: float
+    leading: float
+    width_max: float
     style_properties: FondStyleProperties
     international_info: tuple[int, int]
     version: int
@@ -179,10 +179,10 @@ class FondResource(Resource):
             family_id: int = 0,
             first_char: int = 0,
             last_char: int = 255,
-            ascent: int = 0,
-            descent: int = 0,
-            leading: int = 0,
-            width_max: int = 0,
+            ascent: float = 0.0,
+            descent: float = 0.0,
+            leading: float = 0.0,
+            width_max: float = 0.0,
             style_properties: FondStyleProperties | None = None,
             international_info: tuple[int, int] = (0, 0),
             version: int = 2,
@@ -304,10 +304,10 @@ class FondResource(Resource):
         stream.write_int16(self.family_id)
         stream.write_int16(self.first_char)
         stream.write_int16(self.last_char)
-        stream.write_int16(self.ascent)
-        stream.write_int16(self.descent)
-        stream.write_int16(self.leading)
-        stream.write_int16(self.width_max)
+        stream.write_fixed_4_12(self.ascent)
+        stream.write_fixed_4_12(self.descent)
+        stream.write_fixed_4_12(self.leading)
+        stream.write_fixed_4_12(self.width_max)
         stream.write_uint32_list(resource_table_offsets)
         self.style_properties.dump(stream)
         stream.write_int16_list(self.international_info)
