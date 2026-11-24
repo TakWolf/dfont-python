@@ -1,3 +1,4 @@
+import struct
 from io import BytesIO
 from typing import BinaryIO
 
@@ -219,6 +220,63 @@ def test_fixed_4_12_overflow(value: float) -> None:
     with pytest.raises(OverflowError):
         stream.write_fixed_4_12(value)
     assert stream.tell() == 0
+
+
+@pytest.mark.parametrize(
+    ('values', 'data'),
+    [
+        ([], b''),
+        (
+            [
+                0.0,
+                1 / 256,
+                1.0,
+                1.5,
+                32767 / 256,
+                128.0,
+                65535 / 256,
+            ],
+            b'\x00\x00\x00\x01\x01\x00\x01\x80\x7f\xff\x80\x00\xff\xff',
+        ),
+    ],
+)
+def test_ufixed_8_8_list(values: list[float], data: bytes) -> None:
+    stream = Stream(data)
+    assert stream.read_ufixed_8_8_list(len(values)) == values
+    assert stream.tell() == len(data)
+
+    output = Stream()
+    assert output.write_ufixed_8_8_list(values) == len(data)
+    assert output.tell() == len(data)
+    output.seek(0)
+    assert output.read(len(data)) == data
+
+
+def test_ufixed_8_8_list_rounding() -> None:
+    stream = Stream()
+    stream.write_ufixed_8_8_list([0.1, 0.5 / 256, 1.5 / 256, 2.5 / 256])
+    stream.seek(0)
+    assert stream.read(8) == b'\x00\x1a\x00\x00\x00\x02\x00\x02'
+
+
+@pytest.mark.parametrize(
+    'value',
+    [
+        -1 / 256,
+        256.0,
+    ],
+)
+def test_ufixed_8_8_list_overflow(value: float) -> None:
+    stream = Stream()
+    with pytest.raises(struct.error):
+        stream.write_ufixed_8_8_list([1.0, value])
+    assert stream.tell() == 0
+
+
+def test_ufixed_8_8_list_truncated() -> None:
+    stream = Stream(b'\x01\x00\x01')
+    with pytest.raises(EOFError):
+        stream.read_ufixed_8_8_list(2)
 
 
 def test_pascal_bytes() -> None:

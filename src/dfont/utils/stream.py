@@ -83,6 +83,9 @@ class Stream:
     def read_fixed_4_12(self) -> float:
         return self.read_int16() / 4096
 
+    def read_ufixed_8_8_list(self, count: int) -> list[float]:
+        return [value / 256 for value in self.read_uint16_list(count)]
+
     def read_pascal_bytes(self) -> bytes:
         return self.read(self.read_uint8())
 
@@ -139,6 +142,9 @@ class Stream:
 
     def write_fixed_4_12(self, value: float) -> int:
         return self.write_int16(round(value * 4096))
+
+    def write_ufixed_8_8_list(self, values: Sequence[float]) -> int:
+        return self.write_uint16_list([round(value * 256) for value in values])
 
     def write_pascal_bytes(self, value: bytes) -> int:
         if len(value) > 255:
